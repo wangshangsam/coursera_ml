@@ -21,7 +21,7 @@ h = @(X) sigmoid(X*theta); % h = [h_1; h_2; h_3; ...; h_m]
 J = - 1/m * [y; 1 - y]' * [log(h(X)); log(1 - h(X))];
 grad(1) = 1/m * X(:, 1)' * (h(X) - y);
 
-if m > 1
+if length(theta) > 1
     J = J + lambda/(2*m) * theta(2:end)' * theta(2:end);
     grad(2:end) = 1/m * X(:, 2:end)' * (h(X) - y) ...
                     + lambda/m * theta(2:end);

@@ -62,23 +62,62 @@ Theta2_grad = zeros(size(Theta2));
 %               and Theta2_grad from Part 2.
 %
 
+% Convert y from labels (m x 1 vector) to one-hot vectors (m x num_labels matrix).
+% i-th row of y is the one-hot vector of the i-th sample.
+Y = zeros(m, num_labels);
+for i = 1:num_labels
+    Y(:, i) = (y == i);
+end
 
+% Network forward propagation.
+A_1 = X';
 
+Z_2 = Theta1 * [ones(1, m); A_1];
+A_2 = sigmoid(Z_2);
 
+Z_3 = Theta2 * [ones(1, m); A_2];
+A_3 = sigmoid(Z_3);
 
+H = A_3; % Our prediction. Note: Dimension-wise, H is same size as T'.
 
+% Cost function.
+J = -1/m * sum(sum( Y'.*log(H) + (1-Y').*log(1-H) ));
+% Adding regularization.
+if size(Theta1, 2) > 1
+    J = J + lambda/(2*m) * sum(sum(Theta1(:, 2:end).^2));
+end
+if size(Theta2, 2) > 1
+    J = J + lambda/(2*m) * sum(sum(Theta2(:, 2:end).^2));
+end
 
-
-
-
-
-
-
-
-
-
-
-
+% Backpropagation.
+Delta_2 = zeros(size(Theta2));
+Delta_1 = zeros(size(Theta1));
+for t = 1:m
+    % Step 1
+    a_1 = A_1(:, t);
+    z_2 = Z_2(:, t);
+    a_2 = A_2(:, t);
+    a_3 = A_3(:, t);
+    yVec = Y(t, :)';
+    % Step 2
+    delta_3 = a_3 - yVec;
+    % Step 3
+    delta_2 = Theta2(:, 2:end)' * delta_3 .* sigmoidGradient(z_2);
+    % Step 4
+    Delta_2 = Delta_2 + delta_3 * [1; a_2]';
+    Delta_1 = Delta_1 + delta_2 * [1; a_1]';
+end
+% Step 5
+Theta2_grad = 1/m * Delta_2;
+Theta1_grad = 1/m * Delta_1;
+% Adding regularization.
+if size(Theta1, 2) > 1
+    Theta1_grad(:, 2:end) = Theta1_grad(:, 2:end) + lambda/m * Theta1(:, 2:end);
+end
+if size(Theta2, 2) > 1
+    Theta2_grad(:, 2:end) = Theta2_grad(:, 2:end) + lambda/m * Theta2(:, 2:end);
+end
 
 % -------------------------------------------------------------
 

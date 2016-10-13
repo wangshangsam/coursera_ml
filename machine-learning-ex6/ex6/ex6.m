@@ -50,12 +50,14 @@ fprintf('\nTraining Linear SVM ...\n')
 
 % You should try to change the C value below and see how the decision
 % boundary varies (e.g., try C = 1000)
-C = 1;
-model = svmTrain(X, y, C, @linearKernel, 1e-3, 20);
-visualizeBoundaryLinear(X, y, model);
+for C = [1, 10, 100]
+    fprintf('C = %d\n', C);
+    model = svmTrain(X, y, C, @linearKernel, 1e-3, 20);
+    visualizeBoundaryLinear(X, y, model);
 
-fprintf('Program paused. Press enter to continue.\n');
-pause;
+    fprintf('Program paused. Press enter to continue.\n');
+    pause;
+end
 
 %% =============== Part 3: Implementing Gaussian Kernel ===============
 %  You will now implement the Gaussian kernel to use
